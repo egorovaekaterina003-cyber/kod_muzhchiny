@@ -365,9 +365,19 @@ body{
 /* ============================================================
    КОНФИГУРАЦИЯ
    ============================================================ */
-const WEBHOOK_URL = 'PASTE_GOOGLE_APPS_SCRIPT_URL_HERE'; // сюда вставить URL веб-приложения Apps Script
+
+// ⚠️ ПОСЛЕ публикации Google Apps Script — вставь сюда URL вида:
+// https://script.google.com/macros/s/XXXX/exec
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxTTluGPQN43CwOURaywlKUWM0q44LDbumlUe04IZxWjI2WEthsPZocOAIIzK1__esr/exec';
+
 const GUIDE_LINK = 'https://egorovaekaterina003-cyber.github.io/index_final/'; // ссылка на страницу с гайдом "Бери любую"
 const UNLOCK_HOURS = 24; // через сколько часов открывается следующая диагностика
+
+// Домен бота для формирования ссылки (BotHelp start-параметр)
+const BOTHELP_BOT_DOMAIN = 'dashas_lover_bot';
+// ⚠️ Вставь свой start-параметр из BotHelp → Ссылки
+// Пример: https://r.bothelp.io/tg?domain=dashas_lover_bot&start=c1234-ds → берём "c1234-ds"
+const BOTHELP_START_PARAM = 'ВСТАВЬ_START_PARAM';
 
 /* ============================================================
    ДАННЫЕ ДИАГНОСТИК
@@ -644,12 +654,22 @@ function goToScreen(id){
   window.scrollTo(0,0);
 }
 
+/* ============================================================
+   BOTHELP — ссылка на бота с tg_id в параметре
+   ============================================================ */
+function buildBotLink(tgId) {
+  if(!BOTHELP_START_PARAM || BOTHELP_START_PARAM.indexOf('ВСТАВЬ') === 0) return null;
+  return 'https://r.bothelp.io/tg?domain=' + BOTHELP_BOT_DOMAIN +
+         '&start=' + BOTHELP_START_PARAM +
+         (tgId ? '&tg=' + tgId : '');
+}
+
 function startFromIntro(){
   if(state.tg){
-    // пришёл из бота — email не нужен, сразу в диагностику
+    // пришёл из бота — tg_id уже известен, email не нужен
     startDiagnostic(1);
   } else {
-    // открыл сайт напрямую (не из бота) — просим email как запасной идентификатор
+    // открыл сайт напрямую — просим email как запасной идентификатор
     goToScreen('screen-email');
   }
 }
@@ -748,12 +768,12 @@ function sendToSheet(day){
   if(!WEBHOOK_URL || WEBHOOK_URL.indexOf('PASTE_') === 0) return;
   const answers = state.answers[day] || [];
   const params = new URLSearchParams();
+  params.append('tg',    state.tg    || '');
   params.append('email', state.email || '');
-  params.append('tg', state.tg || '');
-  params.append('day', day);
-  params.append('diagnostic', DIAGNOSTICS[day-1].title);
-  answers.forEach((v, i) => params.append('q'+(i+1), v));
-  fetch(WEBHOOK_URL + '?' + params.toString()).catch(()=>{});
+  params.append('day',   day);
+  answers.forEach((v, i) => params.append('q'+(i+1), v||''));
+  // no-cors чтобы не блокировал браузер/Telegram
+  fetch(WEBHOOK_URL + '?' + params.toString(), { method:'GET', mode:'no-cors' }).catch(()=>{});
 }
 
 /* ============================================================
