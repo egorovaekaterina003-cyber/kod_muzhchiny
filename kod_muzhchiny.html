@@ -219,42 +219,19 @@ body{
     <div class="intro-content">
     <div class="intro-badge">🐅 Личное досье</div>
     <h1 class="intro-title">Привет, <span>тигр</span> 🐅</h1>
-
-    <p class="intro-text">Давай сразу договоримся.</p>
-    <p class="intro-text">Если сейчас думаешь «да у меня просто девушки какие-то не те попадаются» — возможно. 😄</p>
-    <p class="intro-text">Но если одна и та же история повторяется снова и снова — дело обычно уже не в совпадениях. И нет, это не значит, что с тобой что-то не так.</p>
-    <p class="intro-text">Чаще всего мы просто не замечаем собственных привычек и моделей поведения. Именно они незаметно влияют на результат.</p>
-    <p class="intro-text">Поэтому я предлагаю тебе небольшой эксперимент.</p>
-    <p class="intro-text"><strong>4 дня. 4 коротких диагностики.</strong> После каждой открывается новая часть твоего личного досье.</p>
-    <p class="intro-text">🧩 С каждым днём оно становится всё точнее. К четвёртой диагностике ты увидишь полную картину:</p>
-
-    <ul class="intro-list">
-      <li>в чём твои сильные стороны</li>
-      <li>где ты теряешь очки, даже не замечая этого</li>
-      <li>какие привычки мешают получать тот результат, которого ты действительно хочешь</li>
-    </ul>
-
-    <div class="intro-note">
-      💡 <strong>Спойлер.</strong> После первой диагностики покажется, что ты уже понял свою главную проблему. Не спеши с выводами — каждая следующая диагностика открывает новый слой, пока вся картина не сложится целиком.
-    </div>
-
-    <p class="intro-text">И сразу успокою. 😄 Никаких «стань альфой», «купи часы подороже» или «просто будь собой». Интернет и без меня достаточно постарался.</p>
-    <p class="intro-text"><strong>Будет только одно — возможность наконец понять себя чуть лучше.</strong></p>
-    <p class="intro-text">Ну что, начнём? 😉</p>
-
-    <button class="btn-primary" onclick="startFromIntro()">Начать первую диагностику →</button>
+    <p class="intro-text">Оставь email — и начнём. После всех 4 диагностик каждый получит небольшой подарок.</p>
+    <button class="btn-primary" onclick="startFromIntro()">Начать →</button>
     </div>
   </div>
 
   <!-- ============ SCREEN: EMAIL CAPTURE ============ -->
-  <!-- Показывается только если открыли сайт НЕ из бота (нет tg в ссылке) — например для теста -->
   <div class="screen" id="screen-email">
     <div class="email-icon">📩</div>
-    <div class="email-title">Куда прислать досье?</div>
-    <p class="email-sub">Оставь email — туда придёт финальный «Код мужчины» после 4-го дня, чтобы не потерять результат.</p>
+    <div class="email-title">Оставь email</div>
+    <p class="email-sub">После всех 4 диагностик каждый получит небольшой подарок — пришлём на почту.</p>
     <input type="email" class="input-field" id="email-input" placeholder="your@email.com">
     <div class="input-error" id="email-error">Введи корректный email</div>
-    <button class="btn-primary" onclick="submitEmail()">Продолжить →</button>
+    <button class="btn-primary" onclick="submitEmail()">Начать диагностику →</button>
   </div>
 
   <!-- ============ SCREEN: DIAGNOSTIC (question flow) ============ -->
@@ -665,11 +642,12 @@ function buildBotLink(tgId) {
 }
 
 function startFromIntro(){
-  if(state.tg){
-    // пришёл из бота — tg_id уже известен, email не нужен
+  // Всегда показываем сбор email — даже если пришёл из бота
+  // (нужен для отправки подарка после 4 диагностик)
+  if(state.email){
+    // email уже сохранён — сразу в диагностику
     startDiagnostic(1);
   } else {
-    // открыл сайт напрямую — просим email как запасной идентификатор
     goToScreen('screen-email');
   }
 }
