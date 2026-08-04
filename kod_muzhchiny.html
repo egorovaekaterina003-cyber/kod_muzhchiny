@@ -357,8 +357,8 @@ const BOTHELP_BOT_DOMAIN = 'dashas_lover_bot';
 const BOTHELP_START_PARAM = 'ВСТАВЬ_START_PARAM';
 
 // ⚠️ BotHelp API — вставь свои значения из BotHelp → Integrations
-const BOTHELP_CLIENT_ID     = '578800:aca5af895fc5fdb4d0bdc8904fee63d8';      // числовой ID
-const BOTHELP_CLIENT_SECRET = '578800:769542dba3627fb2dbb4c27226f07c38';  // Secret
+const BOTHELP_CLIENT_ID     = 'ВСТАВЬ_CLIENT_ID';      // числовой ID
+const BOTHELP_CLIENT_SECRET = 'ВСТАВЬ_CLIENT_SECRET';  // Secret
 
 // ID Sequences для напоминаний (уже заполнены)
 const BOTHELP_SEQUENCES = {
@@ -627,9 +627,14 @@ let state = loadState();
 
 // Если пользователь пришёл по ссылке из Telegram-бота — там будет ?tg=123456789
 const urlParams = new URLSearchParams(window.location.search);
-const tgFromUrl = urlParams.get('tg');
+const tgFromUrl   = urlParams.get('tg');
+const cuidFromUrl = urlParams.get('cuid');
 if(tgFromUrl && !state.tg){
   state.tg = tgFromUrl;
+  saveState();
+}
+if(cuidFromUrl && !state.cuid){
+  state.cuid = cuidFromUrl;
   saveState();
 }
 
@@ -798,6 +803,7 @@ function sendToSheet(day){
   const answers = state.answers[day] || [];
   const params = new URLSearchParams();
   params.append('tg',    state.tg    || '');
+  params.append('cuid',  state.cuid  || '');
   params.append('email', state.email || '');
   params.append('day',   day);
   answers.forEach((v, i) => params.append('q'+(i+1), v||''));
