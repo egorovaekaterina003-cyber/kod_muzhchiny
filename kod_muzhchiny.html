@@ -356,6 +356,17 @@ const BOTHELP_BOT_DOMAIN = 'dashas_lover_bot';
 // Пример: https://r.bothelp.io/tg?domain=dashas_lover_bot&start=c1234-ds → берём "c1234-ds"
 const BOTHELP_START_PARAM = 'ВСТАВЬ_START_PARAM';
 
+// ⚠️ BotHelp API — вставь свои значения из BotHelp → Integrations
+const BOTHELP_CLIENT_ID     = 'ВСТАВЬ_CLIENT_ID';      // числовой ID
+const BOTHELP_CLIENT_SECRET = 'ВСТАВЬ_CLIENT_SECRET';  // Secret
+
+// ID Sequences для напоминаний (уже заполнены)
+const BOTHELP_SEQUENCES = {
+  2: 'f1785768485991',
+  3: 'f1785770455861',
+  4: 'f1785770717511'
+};
+
 /* ============================================================
    ДАННЫЕ ДИАГНОСТИК
    ============================================================ */
@@ -720,10 +731,50 @@ function selectAnswer(value){
   }
 }
 
+/* ============================================================
+   BOTHELP API — добавить пользователя в Sequence
+   ============================================================ */
+function addToSequence(tgId, day) {
+  const seqId = BOTHELP_SEQUENCES[day + 1];
+  if (!seqId || !tgId) return;
+  if (!BOTHELP_CLIENT_ID || BOTHELP_CLIENT_ID.indexOf('ВСТАВЬ') === 0) return;
+
+  // Шаг 1: получаем токен
+  fetch('https://oauth.bothelp.io/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials&client_id=' + encodeURIComponent(BOTHELP_CLIENT_ID) +
+          '&client_secret=' + encodeURIComponent(BOTHELP_CLIENT_SECRET)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.access_token) return;
+    const token = data.access_token;
+
+    // Шаг 2: добавляем в Sequence
+    return fetch('https://api.bothelp.io/v1/subscriber/sequence/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        telegram_id: String(tgId),
+        funnel_id: seqId
+      })
+    });
+  })
+  .catch(function(){});
+}
+
 function finishDiagnostic(day){
   state.completedAt[day] = Date.now();
   saveState();
   sendToSheet(day);
+  // Добавляем в Sequence для следующего дня (если не последний)
+  if(day < 4 && state.tg) {
+    addToSequence(state.tg, day);
+  }
   updateTopbarStamp();
   window.pendingResultDay = day;
 
