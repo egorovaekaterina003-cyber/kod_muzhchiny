@@ -1297,12 +1297,52 @@ window.addEventListener('DOMContentLoaded', () => {
   updateTopbarStamp();
   const hasStarted = Object.keys(state.completedAt).length > 0 ||
                       (state.answers[1] && state.answers[1].length > 0);
+
+  // Если localStorage пуст, но пришёл с tg_id — пробуем восстановить из Google Sheet
+  if(!hasStarted && state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
+    restoreStateFromSheet(state.tg);
+    return;
+  }
+
   if(!hasStarted){
-    goToScreen('screen-intro'); // показываем интро при первом визите
+    goToScreen('screen-intro');
     return;
   }
   checkAndRenderWaitScreen();
 });
+
+/* Восстанавливает состояние из Google Sheet по tg_id */
+function restoreStateFromSheet(tgId){
+  const url = WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(tgId);
+  fetch(url, { method: 'GET', mode: 'no-cors' }).catch(() => {});
+
+  // no-cors не даёт прочитать ответ — используем Apps Script doGet с redirect
+  // Запрашиваем через обычный fetch без no-cors
+  fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(tgId))
+    .then(r => r.json())
+    .then(data => {
+      if(data && data.day && data.day > 0){
+        // Восстанавливаем минимальное состояние
+        state.email = data.email || state.email;
+        state.cuid = data.cuid || state.cuid;
+        // Помечаем все пройденные дни как завершённые (с временем в прошлом)
+        for(let d = 1; d <= data.day; d++){
+          if(!state.completedAt[d]){
+            // Ставим время: день назад × номер дня
+            state.completedAt[d] = Date.now() - (data.day - d + 1) * UNLOCK_HOURS * 3600 * 1000 - 60000;
+          }
+        }
+        saveState();
+        updateTopbarStamp();
+        checkAndRenderWaitScreen();
+      } else {
+        goToScreen('screen-intro');
+      }
+    })
+    .catch(() => {
+      goToScreen('screen-intro');
+    });
+}
 </script>
 
 </body>
