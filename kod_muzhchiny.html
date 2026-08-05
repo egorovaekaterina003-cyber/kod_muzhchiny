@@ -447,7 +447,7 @@ body{
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwefq3oq-Fog7BnA9QIKg5R2n_RwI3181PyaEvhupfLBc6_iE7UnpJsoH_WCWZvy7Yq6g/exec';
 
 const GUIDE_LINK = 'https://egorovaekaterina003-cyber.github.io/index_final/'; // ссылка на страницу с гайдом "Бери любую"
-const UNLOCK_HOURS = 0.017; // ТЕСТ: 1 минута (заменить на 24 для продакшена)
+const UNLOCK_HOURS = 24; // 24 часа между диагностиками
 
 // Домен бота для формирования ссылки (BotHelp start-параметр)
 const BOTHELP_BOT_DOMAIN = 'dashas_lover_bot';
@@ -1482,11 +1482,10 @@ function buildRecommendationText(weakest){
 function sendGift() {
   const btn = document.getElementById('gift-btn');
   const status = document.getElementById('gift-status');
-  if (!btn || btn.disabled) return;
+  if (!btn) return;
 
   trackEvent('btn_gift');
   btn.disabled = true;
-  btn.onclick = null;
   btn.textContent = 'Отправляем...';
 
   if (WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')) {
