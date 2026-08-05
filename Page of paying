@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Оплата прошла успешно</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0908;
+  --card:#1D1512;
+  --amber:#D99847;
+  --amber-bright:#F0B36A;
+  --red:#C43B3B;
+  --text:#F2EDE6;
+  --text-2:#A69A8C;
+  --line:rgba(217,152,71,0.18);
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 20px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  max-width:400px;
+  width:100%;
+  text-align:center;
+}
+.emoji{
+  font-size:56px;
+  margin-bottom:20px;
+  display:block;
+}
+.title{
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  font-size:32px;
+  line-height:1.15;
+  text-transform:uppercase;
+  margin-bottom:14px;
+  color:var(--text);
+}
+.subtitle{
+  font-size:16px;
+  line-height:1.6;
+  color:var(--text-2);
+  margin-bottom:28px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px 20px;
+  margin-bottom:24px;
+  text-align:left;
+}
+.card p{
+  font-size:15px;
+  line-height:1.65;
+  color:var(--text-2);
+  margin-bottom:14px;
+}
+.card p:last-child{
+  margin-bottom:0;
+}
+.card strong{
+  color:var(--amber-bright);
+}
+.footer{
+  font-size:13px;
+  color:var(--text-2);
+  line-height:1.6;
+}
+.footer a{
+  color:var(--amber);
+  text-decoration:none;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="emoji">🎉</span>
+  <h1 class="title">Оплата прошла<br>успешно!</h1>
+  <p class="subtitle">Спасибо за покупку! Твой гайд уже летит к тебе.</p>
+
+  <div class="card">
+    <p>📩 Письмо с гайдом придёт на твою почту <strong>в течение нескольких минут</strong>.</p>
+    <p>Проверь папку «Спам» — иногда письма попадают туда.</p>
+  </div>
+
+  <p class="footer">Не получил письмо? Напиши нам:<br>
+    <a href="mailto:dashashamashu@gmail.com">dashashamashu@gmail.com</a>
+  </p>
+</div>
+</body>
+</html>
