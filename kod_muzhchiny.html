@@ -786,7 +786,13 @@ function buildBotLink(tgId) {
 
 function startFromIntro(){
   if(state.email){
-    startDiagnostic(1);
+    // Если уже есть завершённые дни — идём дальше, не на день 1
+    const lastCompleted = Math.max(0, ...Object.keys(state.completedAt).map(Number));
+    if(lastCompleted > 0){
+      checkAndRenderWaitScreen();
+    } else {
+      startDiagnostic(1);
+    }
   } else {
     goToScreen('screen-intro');
   }
