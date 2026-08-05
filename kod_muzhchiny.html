@@ -213,8 +213,8 @@ body{
   <!-- ============ SCREEN: LOADING ============ -->
   <div class="screen" id="screen-loading">
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;">
-      <div style="font-size:36px;">⏳</div>
-      <div style="font-size:16px;color:var(--text-2);">Загружаем твоё досье...</div>
+      <div style="font-size:48px;font-family:'Montserrat',sans-serif;font-weight:900;color:var(--amber);" id="loading-count">10</div>
+      <div style="font-size:15px;color:var(--text-2);">Загружаем диагностику...</div>
     </div>
   </div>
 
@@ -1515,23 +1515,42 @@ window.addEventListener('DOMContentLoaded', () => {
   // Нет данных в localStorage, но есть tg_id — восстанавливаем из таблицы
   if(state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
     goToScreen('screen-loading');
+
+    // Обратный отсчёт 10-9-8...
+    let count = 10;
+    const countEl = document.getElementById('loading-count');
+    const countInterval = setInterval(() => {
+      count--;
+      if(countEl) countEl.textContent = count;
+      if(count <= 0) clearInterval(countInterval);
+    }, 1000);
+
+    let done = false;
+    function finishRestore(data) {
+      if(done) return;
+      done = true;
+      clearInterval(countInterval);
+      if(data && data.day && data.day > 0){
+        state.email = data.email || state.email;
+        state.cuid  = data.cuid  || state.cuid;
+        for(let d = 1; d <= data.day; d++){
+          state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
+        }
+        saveState();
+        updateTopbarStamp();
+        checkAndRenderWaitScreen();
+      } else {
+        goToScreen('screen-intro');
+      }
+    }
+
+    // Таймаут 10 сек
+    setTimeout(() => finishRestore(null), 10000);
+
     fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg))
       .then(r => r.json())
-      .then(data => {
-        if(data && data.day && data.day > 0){
-          state.email = data.email || state.email;
-          state.cuid  = data.cuid  || state.cuid;
-          for(let d = 1; d <= data.day; d++){
-            state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
-          }
-          saveState();
-          updateTopbarStamp();
-          checkAndRenderWaitScreen();
-        } else {
-          goToScreen('screen-intro');
-        }
-      })
-      .catch(() => { goToScreen('screen-intro'); });
+      .then(data => finishRestore(data))
+      .catch(() => finishRestore(null));
     return;
   }
 
