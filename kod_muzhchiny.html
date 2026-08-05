@@ -338,61 +338,98 @@ body{
     <div id="traits-container-wait"></div>
   </div>
 
-  <!-- ============ SCREEN: FINAL DOSSIER ============ -->
+  <!-- ============ SCREEN: FINAL DOSSIER (портрет — сплошной текст) ============ -->
   <div class="screen" id="screen-final">
-    <div class="intro-note" style="margin-bottom:16px;">⚠️ <strong>Не спеши пролистывать.</strong> Некоторые выводы могут оказаться совсем не такими, как ты ожидал.</div>
 
     <div class="final-header">
-      <div class="final-badge" id="final-title-badge">🐅 Досье закрыто</div>
+      <div class="final-badge">🐅 Полное досье</div>
       <div class="final-title" id="final-title-text">Твой полный Код мужчины</div>
     </div>
 
-    <div class="q-card" style="margin-bottom:16px;" id="final-intro-resume">
-      <p class="trait-comment" id="final-intro-text" style="font-size:14.5px;line-height:1.65;">—</p>
+    <!-- Сплошной текст портрета -->
+    <div id="final-portrait-text" style="font-size:15px;line-height:1.75;color:var(--text-1);"></div>
+
+    <!-- Скрытые поля для JS (не показываются, только хранят данные) -->
+    <div style="display:none">
+      <span id="final-intro-text"></span>
+      <span id="final-traits-container"></span>
+      <span id="final-strength"></span>
+      <span id="final-growth"></span>
+      <span id="final-women-feel"></span>
+      <span id="final-pattern"></span>
+      <span id="final-forecast-bad"></span>
+      <span id="final-forecast-good"></span>
+      <span id="final-recommendation"></span>
     </div>
 
-    <div id="final-traits-container"></div>
+    <button class="btn-primary" onclick="goToScreen('screen-sell')" style="margin-top:24px;">Узнать, как изменить свой сценарий →</button>
+  </div>
 
-    <div class="summary-block" style="border-left:3px solid var(--amber);">
-      <div class="summary-label">🏆 Твоя главная сильная сторона</div>
-      <div class="summary-text" id="final-strength">—</div>
-    </div>
-    <div class="summary-block">
-      <div class="summary-label">📈 Главная точка роста</div>
-      <div class="summary-text" id="final-growth">—</div>
-    </div>
-    <div class="summary-block">
-      <div class="summary-label">💭 Что женщины чувствуют рядом с тобой</div>
-      <div class="summary-text" id="final-women-feel">—</div>
-    </div>
-    <div class="summary-block">
-      <div class="summary-label">🔄 Сценарий, который чаще всего повторяется</div>
-      <div class="summary-text" id="final-pattern">—</div>
+  <!-- ============ SCREEN: SELL (статичный продающий текст) ============ -->
+  <div class="screen" id="screen-sell">
+    <div style="font-size:15px;line-height:1.75;color:var(--text);">
+
+      <p style="margin-bottom:20px;">С тобой всё в порядке.</p>
+      <p style="margin-bottom:20px;">Ты не «не тот мужчина», не «неудачник» и не человек, которому просто не везёт с женщинами.</p>
+      <p style="margin-bottom:20px;">По твоим ответам видно совсем другое.</p>
+      <p style="margin-bottom:20px;"><strong>У тебя уже есть качества, которые женщины ценят, замечают и к которым тянутся.</strong> Но есть несколько привычек и моделей поведения, которые снова и снова приводят тебя к одному и тому же сценарию.</p>
+      <p style="margin-bottom:20px;">Именно поэтому кажется, будто история <em>постоянно повторяется</em>.</p>
+      <p style="margin-bottom:20px;"><strong>Хорошая новость в том, что это не черты характера.</strong></p>
+      <p style="margin-bottom:28px;">Это привычные модели поведения. А значит — их можно изменить.</p>
+
+      <div style="background:var(--card);border-left:3px solid var(--amber);border-radius:8px;padding:18px 20px;margin-bottom:28px;">
+        <p style="font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin-bottom:12px;">Представь, что через несколько месяцев...</p>
+        <p style="margin-bottom:10px;">Ты знакомишься с девушкой и больше не думаешь каждые пять минут, что написать дальше.</p>
+        <p style="margin-bottom:10px;">Ты не ищешь скрытый смысл в каждом её сообщении.</p>
+        <p style="margin-bottom:10px;">Не переживаешь, понравился ли ей.</p>
+        <p style="margin-bottom:10px;">Не боишься сделать что-то не так.</p>
+        <p style="margin-bottom:10px;">Ты просто получаешь удовольствие от общения и <strong>остаёшься собой</strong>.</p>
+        <p style="margin-bottom:0;">Женщина чувствует рядом не мужчину, который старается понравиться. <strong>Она чувствует мужчину, который знает себе цену.</strong></p>
+      </div>
+
+      <p style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;margin-bottom:14px;color:var(--amber-bright);">📖 Именно поэтому я создала гайд «БЕРИ ЛЮБУЮ»</p>
+      <p style="margin-bottom:12px;">Эта диагностика помогла тебе увидеть себя со стороны. Ты понял, что именно мешает тебе строить отношения так, как хочется.</p>
+      <p style="margin-bottom:12px;"><em>Но сама диагностика ничего не меняет.</em></p>
+      <p style="margin-bottom:12px;">Она показывает причины.</p>
+      <p style="margin-bottom:20px;"><strong>Гайд «БЕРИ ЛЮБУЮ» — это уже следующий шаг.</strong> Шаг, который помогает не просто понять проблему, а изменить привычные сценарии поведения.</p>
+
+      <p style="margin-bottom:12px;font-weight:700;">В нём ты узнаешь:</p>
+      <div style="background:var(--card);border-radius:10px;padding:16px 18px;margin-bottom:28px;">
+        <p style="margin-bottom:10px;">✅ как знакомиться спокойно и уверенно <strong>без шаблонных фраз</strong>;</p>
+        <p style="margin-bottom:10px;">✅ как перестать попадать во <strong>френдзону</strong>;</p>
+        <p style="margin-bottom:10px;">✅ как удерживать интерес женщины <strong>без манипуляций и игр</strong>;</p>
+        <p style="margin-bottom:10px;">✅ как перестать зависеть от её сообщений и реакции;</p>
+        <p style="margin-bottom:0;">✅ как стать мужчиной, которого женщина <strong>выбирает сама</strong>, а не мужчиной, который постоянно пытается заслужить её внимание.</p>
+      </div>
+
+      <p style="margin-bottom:20px;"><em>Женщины не выбирают идеальных мужчин.</em></p>
+      <p style="margin-bottom:20px;">Они выбирают мужчин, рядом с которыми <strong>чувствуют себя определённым образом</strong>.</p>
+      <p style="margin-bottom:28px;">Сегодня ты увидел, какое впечатление производишь сейчас. Но гораздо важнее другое — <strong>теперь ты знаешь, что именно можно изменить.</strong></p>
     </div>
 
-    <div class="q-card" style="margin:16px 0;">
-      <div class="summary-label" style="margin-bottom:8px;">Если ничего не менять...</div>
-      <div class="trait-comment" id="final-forecast-bad" style="font-size:14px;line-height:1.6;">—</div>
-    </div>
-    <div class="q-card" style="margin:16px 0;border-left:3px solid #4CAF50;">
-      <div class="summary-label" style="margin-bottom:8px;">Если изменить всего несколько привычек...</div>
-      <div class="trait-comment" id="final-forecast-good" style="font-size:14px;line-height:1.6;color:var(--text-1);">—</div>
-    </div>
+    <button class="btn-primary" onclick="goToScreen('screen-upsell')" style="margin-top:8px;margin-bottom:24px;">Стать тем мужчиной, которого выбирают женщины →</button>
+  </div>
 
-    <div class="summary-block" style="border-left:3px solid var(--amber);">
-      <div class="summary-label">🎯 Твоя персональная рекомендация</div>
-      <div class="summary-text" id="final-recommendation">—</div>
-    </div>
-
-    <div class="upsell-card">
+  <!-- ============ SCREEN: UPSELL ============ -->
+  <div class="screen" id="screen-upsell">
+    <div class="upsell-card" style="margin-top:0;">
       <div class="upsell-eyebrow">Следующий шаг</div>
       <div class="upsell-title">Гайд «Бери любую»</div>
       <p class="upsell-text">Досье показало картину. Гайд показывает, что с ней делать — пошагово, без воды, конкретно под то, что открылось в твоём профиле.</p>
-      <div style="margin-top:16px;">
-        <p style="font-size:14px;color:var(--text-2);margin-bottom:12px;">💳 Ты хочешь оплатить картой, выпущенной на территории РФ, или иностранной картой?</p>
-        <a href="https://auth.robokassa.ru/merchant/Invoice/9iIXaRqzpUe6aJTF7nsOgQ" class="btn-primary" id="upsell-link-rub" target="_blank" style="margin-bottom:10px;">🇷🇺 Оплата картой РФ</a>
-        <a href="https://buy.stripe.com/14A8wP6hFdwN9S772w8Ra26" class="btn-secondary" id="upsell-link-eur" target="_blank">🌍 Оплата иностранной картой</a>
+      <div style="margin-top:24px;">
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:16px;">💳 Ты хочешь оплатить картой, выпущенной на территории РФ, или иностранной картой?</p>
+        <a href="https://auth.robokassa.ru/merchant/Invoice/9iIXaRqzpUe6aJTF7nsOgQ" class="btn-primary" target="_blank" style="margin-bottom:12px;">🇷🇺 Оплата картой РФ</a>
+        <a href="https://buy.stripe.com/14A8wP6hFdwN9S772w8Ra26" class="btn-secondary" target="_blank">🌍 Оплата иностранной картой</a>
       </div>
+    </div>
+
+    <!-- Блок подарка -->
+    <div style="margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:10px;">🎁</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">Хочу просто забрать подарок</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:16px;">Мы пришлём тебе его на почту, которую ты оставил в начале.</div>
+      <button class="btn-secondary" id="gift-btn" onclick="sendGift()" style="margin-top:0;">Отправить мне подарок →</button>
+      <div id="gift-status" style="display:none;margin-top:12px;font-size:13px;color:var(--green);">✅ Отправлено! Проверь почту.</div>
     </div>
 
     <p class="footer-note">Полное досье отправлено на почту, которую ты оставил в начале.</p>
@@ -1288,7 +1325,85 @@ function renderFinalDossier(){
   // Recommendation
   document.getElementById('final-recommendation').textContent = buildRecommendationFull(strongest, weakest);
 
+  // Собираем сплошной текст портрета
+  buildPortraitText(scored, avg, strongest, weakest, titleData);
+
   goToScreen('screen-final');
+}
+
+function buildPortraitText(scored, avg, strongest, weakest, titleData) {
+  const el = document.getElementById('final-portrait-text');
+  if (!el) return;
+
+  const p = (text, style) => {
+    const d = document.createElement('p');
+    d.style.cssText = 'margin-bottom:16px;' + (style || '');
+    d.innerHTML = text;
+    return d;
+  };
+
+  const label = (text) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'font-size:10.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;margin-top:8px;';
+    d.textContent = text;
+    return d;
+  };
+
+  const divider = () => {
+    const d = document.createElement('div');
+    d.style.cssText = 'height:1px;background:var(--line);margin:20px 0;';
+    return d;
+  };
+
+  const card = (html) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'background:var(--card);border-left:3px solid var(--amber);border-radius:8px;padding:16px 18px;margin-bottom:16px;font-size:14px;line-height:1.6;color:var(--text);';
+    d.innerHTML = html;
+    return d;
+  };
+
+  el.innerHTML = '';
+
+  // Вводное резюме
+  el.appendChild(p('<em>' + titleData.resume + '</em>', 'color:var(--text-2);font-size:14px;'));
+
+  el.appendChild(divider());
+
+  // 8 характеристик — только текст без звёзд и категорий
+  scored.forEach(t => {
+    const portraitKey = t.key;
+    const richTexts = PORTRAIT_TRAITS_TEXT[portraitKey];
+    const text = richTexts ? richTexts[t.stars] || t.comments[t.level] : t.comments[t.level];
+    const block = document.createElement('div');
+    block.style.cssText = 'margin-bottom:14px;';
+    block.innerHTML = '<span style="font-size:13px;font-weight:700;color:var(--amber-bright);">' + t.icon + ' ' + t.name + '</span><p style="margin-top:6px;margin-bottom:0;font-size:14px;line-height:1.6;color:var(--text-2);">' + text + '</p>';
+    el.appendChild(block);
+  });
+
+  el.appendChild(divider());
+
+  // Главная сильная сторона
+  el.appendChild(label('Твоя главная сила'));
+  el.appendChild(card('<strong>' + (STRENGTH_TEXTS[strongest.key] || '') + '</strong>'));
+
+  // Главная точка роста
+  el.appendChild(label('Главная точка роста'));
+  el.appendChild(card('<em>' + (GROWTH_TEXTS[weakest.key] || '') + '</em>'));
+
+  el.appendChild(divider());
+
+  // Что женщины чувствуют
+  el.appendChild(label('Что женщины чувствуют рядом с тобой'));
+  el.appendChild(p(getWomenFeelText(scored), 'color:var(--text);'));
+
+  // Повторяющийся сценарий
+  el.appendChild(label('Повторяющийся сценарий'));
+  el.appendChild(p(getPatternText(scored), 'color:var(--text);'));
+
+  el.appendChild(divider());
+
+  // Если ничего не менять
+  el.appendChild(p('<strong>Если ничего не менять...</strong><br><span style="color:var(--text-2);">' + getForecastBad(avg) + '</span>'));
 }
 
 function buildPatternText(scored){
@@ -1296,6 +1411,43 @@ function buildPatternText(scored){
 }
 function buildRecommendationText(weakest){
   return GROWTH_TEXTS[weakest.key] || `Начни с малого: в следующей похожей ситуации сделай на один шаг больше, чем обычно себе позволяешь.`;
+}
+
+/* ============================================================
+   ПОДАРОК — отправка письма с первой главой гайда
+   ============================================================ */
+function sendGift() {
+  const btn = document.getElementById('gift-btn');
+  const status = document.getElementById('gift-status');
+  if (!btn) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Отправляем...';
+
+  const email = state.email || '';
+  const tg = state.tg || '';
+
+  if (WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')) {
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'gift', email, tg, cuid: state.cuid })
+    })
+    .then(() => {
+      btn.style.display = 'none';
+      status.style.display = 'block';
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Попробовать ещё раз';
+    });
+  } else {
+    // Режим без вебхука — просто показываем подтверждение
+    setTimeout(() => {
+      btn.style.display = 'none';
+      status.style.display = 'block';
+    }, 800);
+  }
 }
 
 /* ============================================================
