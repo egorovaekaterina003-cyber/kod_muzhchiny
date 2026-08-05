@@ -1510,28 +1510,30 @@ window.addEventListener('DOMContentLoaded', () => {
         if(restored) return;
         restored = true;
         clearTimeout(restoreTimer);
+        console.log('restoreState response:', JSON.stringify(data));
         if(data && data.day && data.day > 0){
           state.email = data.email || state.email;
           state.cuid  = data.cuid  || state.cuid;
-          // Восстанавливаем completedAt для всех завершённых дней
           for(let d = 1; d <= data.day; d++){
             if(!state.completedAt[d]){
-              state.completedAt[d] = Date.now() - (data.day - d + 1) * UNLOCK_HOURS * 3600 * 1000 - 60000;
+              state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
             }
           }
           saveState();
           updateTopbarStamp();
+          console.log('completedAt after restore:', JSON.stringify(state.completedAt));
           checkAndRenderWaitScreen();
         } else {
-          // В таблице нет записи — используем localStorage или начинаем заново
+          console.log('restoreState: no data, day=0');
           if(hasStarted){ checkAndRenderWaitScreen(); }
           else { goToScreen('screen-intro'); }
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if(!restored){
           restored = true;
           clearTimeout(restoreTimer);
+          console.log('restoreState error:', err);
           if(hasStarted){ checkAndRenderWaitScreen(); }
           else { goToScreen('screen-intro'); }
         }
