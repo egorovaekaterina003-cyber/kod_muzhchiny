@@ -1490,14 +1490,18 @@ window.addEventListener('DOMContentLoaded', () => {
   const hasStarted = Object.keys(state.completedAt).length > 0 ||
                       (state.answers[1] && state.answers[1].length > 0);
 
-  // Если localStorage пуст но пришёл с tg_id — пробуем восстановить из Sheet
-  if(!hasStarted && state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
+  // Если есть tg_id — ВСЕГДА сначала проверяем таблицу (Telegram WebView не хранит localStorage)
+  if(state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
     goToScreen('screen-loading');
 
-    // Таймаут 3 сек — если скрипт не ответил, идём дальше
     let restored = false;
     const restoreTimer = setTimeout(() => {
-      if(!restored){ restored = true; goToScreen('screen-intro'); }
+      if(!restored){
+        restored = true;
+        // Таймаут — используем то что есть в localStorage
+        if(hasStarted){ checkAndRenderWaitScreen(); }
+        else { goToScreen('screen-intro'); }
+      }
     }, 3000);
 
     fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg))
@@ -1509,6 +1513,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if(data && data.day && data.day > 0){
           state.email = data.email || state.email;
           state.cuid  = data.cuid  || state.cuid;
+          // Восстанавливаем completedAt для всех завершённых дней
           for(let d = 1; d <= data.day; d++){
             if(!state.completedAt[d]){
               state.completedAt[d] = Date.now() - (data.day - d + 1) * UNLOCK_HOURS * 3600 * 1000 - 60000;
@@ -1518,11 +1523,18 @@ window.addEventListener('DOMContentLoaded', () => {
           updateTopbarStamp();
           checkAndRenderWaitScreen();
         } else {
-          goToScreen('screen-intro');
+          // В таблице нет записи — используем localStorage или начинаем заново
+          if(hasStarted){ checkAndRenderWaitScreen(); }
+          else { goToScreen('screen-intro'); }
         }
       })
       .catch(() => {
-        if(!restored){ restored = true; clearTimeout(restoreTimer); goToScreen('screen-intro'); }
+        if(!restored){
+          restored = true;
+          clearTimeout(restoreTimer);
+          if(hasStarted){ checkAndRenderWaitScreen(); }
+          else { goToScreen('screen-intro'); }
+        }
       });
     return;
   }
