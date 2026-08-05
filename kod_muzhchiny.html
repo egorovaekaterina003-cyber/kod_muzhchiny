@@ -362,7 +362,7 @@ body{
       <span id="final-recommendation"></span>
     </div>
 
-    <button class="btn-primary" onclick="goToScreen('screen-sell')" style="margin-top:24px;">Узнать, как изменить свой сценарий →</button>
+    <button class="btn-primary" onclick="trackEvent('btn_sell'); goToScreen('screen-sell')" style="margin-top:24px;">Узнать, как изменить свой сценарий →</button>
   </div>
 
   <!-- ============ SCREEN: SELL (статичный продающий текст) ============ -->
@@ -407,7 +407,7 @@ body{
       <p style="margin-bottom:28px;">Сегодня ты увидел, какое впечатление производишь сейчас. Но гораздо важнее другое — <strong>теперь ты знаешь, что именно можно изменить.</strong></p>
     </div>
 
-    <button class="btn-primary" onclick="goToScreen('screen-upsell')" style="margin-top:8px;margin-bottom:24px;">Стать тем мужчиной, которого выбирают женщины →</button>
+    <button class="btn-primary" onclick="trackEvent('btn_upsell'); goToScreen('screen-upsell')" style="margin-top:8px;margin-bottom:24px;">Стать тем мужчиной, которого выбирают женщины →</button>
   </div>
 
   <!-- ============ SCREEN: UPSELL ============ -->
@@ -418,8 +418,8 @@ body{
       <p class="upsell-text">Досье показало картину. Гайд показывает, что с ней делать — пошагово, без воды, конкретно под то, что открылось в твоём профиле.</p>
       <div style="margin-top:24px;">
         <p style="font-size:14px;color:var(--text-2);margin-bottom:16px;">💳 Ты хочешь оплатить картой, выпущенной на территории РФ, или иностранной картой?</p>
-        <a href="https://auth.robokassa.ru/merchant/Invoice/9iIXaRqzpUe6aJTF7nsOgQ" class="btn-primary" target="_blank" style="margin-bottom:12px;">🇷🇺 Оплата картой РФ</a>
-        <a href="https://buy.stripe.com/14A8wP6hFdwN9S772w8Ra26" class="btn-secondary" target="_blank">🌍 Оплата иностранной картой</a>
+        <a href="https://auth.robokassa.ru/merchant/Invoice/9iIXaRqzpUe6aJTF7nsOgQ" class="btn-primary" target="_blank" onclick="trackEvent('payment_robokassa')" style="margin-bottom:12px;">🇷🇺 Оплата картой РФ</a>
+        <a href="https://buy.stripe.com/14A8wP6hFdwN9S772w8Ra26" class="btn-secondary" target="_blank" onclick="trackEvent('payment_stripe')">🌍 Оплата иностранной картой</a>
       </div>
     </div>
 
@@ -863,6 +863,9 @@ function selectAnswer(value){
   state.answers[day][state.currentQ] = value;
   saveState();
 
+  // Трекинг шага
+  sendStepToSheet(day, state.currentQ + 1, value);
+
   const diag = DIAGNOSTICS[day - 1];
   if(state.currentQ < diag.questions.length - 1){
     state.currentQ++;
@@ -871,6 +874,32 @@ function selectAnswer(value){
   } else {
     finishDiagnostic(day);
   }
+}
+
+function sendStepToSheet(day, qNum, value){
+  if(!WEBHOOK_URL || WEBHOOK_URL.indexOf('PASTE_') === 0) return;
+  const params = new URLSearchParams();
+  params.append('action', 'step');
+  params.append('tg',    state.tg    || '');
+  params.append('email', state.email || '');
+  params.append('cuid',  state.cuid  || '');
+  params.append('day',   day);
+  params.append('q',     qNum);
+  params.append('v',     value);
+  fetch(WEBHOOK_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' }).catch(()=>{});
+}
+
+function trackEvent(event){
+  if(!WEBHOOK_URL || WEBHOOK_URL.indexOf('PASTE_') === 0) return;
+  const params = new URLSearchParams();
+  params.append('action', 'step');
+  params.append('tg',    state.tg    || '');
+  params.append('email', state.email || '');
+  params.append('cuid',  state.cuid  || '');
+  params.append('day',   state.currentDay || 0);
+  params.append('q',     event);
+  params.append('v',     '');
+  fetch(WEBHOOK_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' }).catch(()=>{});
 }
 
 /* ============================================================
@@ -951,6 +980,7 @@ function finishDiagnostic(day){
 }
 
 function revealDayResult(){
+  trackEvent('result_day_' + (window.pendingResultDay || state.currentDay));
   renderDayResult(window.pendingResultDay);
 }
 
@@ -1328,6 +1358,7 @@ function renderFinalDossier(){
   // Собираем сплошной текст портрета
   buildPortraitText(scored, avg, strongest, weakest, titleData);
 
+  trackEvent('final_dossier');
   goToScreen('screen-final');
 }
 
@@ -1421,28 +1452,23 @@ function sendGift() {
   const status = document.getElementById('gift-status');
   if (!btn) return;
 
+  trackEvent('btn_gift');
   btn.disabled = true;
   btn.textContent = 'Отправляем...';
 
-  const email = state.email || '';
-  const tg = state.tg || '';
-
   if (WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')) {
-    fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'gift', email, tg, cuid: state.cuid })
-    })
-    .then(() => {
-      btn.style.display = 'none';
-      status.style.display = 'block';
-    })
-    .catch(() => {
-      btn.disabled = false;
-      btn.textContent = 'Попробовать ещё раз';
-    });
+    const params = new URLSearchParams();
+    params.append('action', 'gift');
+    params.append('email', state.email || '');
+    params.append('tg',    state.tg    || '');
+    params.append('cuid',  state.cuid  || '');
+    // no-cors — как sendToSheet, Telegram WebView не поддерживает cross-origin POST
+    fetch(WEBHOOK_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+      .finally(() => {
+        btn.style.display = 'none';
+        status.style.display = 'block';
+      });
   } else {
-    // Режим без вебхука — просто показываем подтверждение
     setTimeout(() => {
       btn.style.display = 'none';
       status.style.display = 'block';
@@ -1460,11 +1486,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Если localStorage пуст но пришёл с tg_id — пробуем восстановить из Sheet
   if(!hasStarted && state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
-    // Показываем заглушку пока грузим
     goToScreen('screen-loading');
+
+    // Таймаут 3 сек — если скрипт не ответил, идём дальше
+    let restored = false;
+    const restoreTimer = setTimeout(() => {
+      if(!restored){ restored = true; goToScreen('screen-intro'); }
+    }, 3000);
+
     fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg))
       .then(r => r.json())
       .then(data => {
+        if(restored) return;
+        restored = true;
+        clearTimeout(restoreTimer);
         if(data && data.day && data.day > 0){
           state.email = data.email || state.email;
           state.cuid  = data.cuid  || state.cuid;
@@ -1480,7 +1515,9 @@ window.addEventListener('DOMContentLoaded', () => {
           goToScreen('screen-intro');
         }
       })
-      .catch(() => { goToScreen('screen-intro'); });
+      .catch(() => {
+        if(!restored){ restored = true; clearTimeout(restoreTimer); goToScreen('screen-intro'); }
+      });
     return;
   }
 
