@@ -1002,8 +1002,12 @@ function sendToSheet(day){
   params.append('email', state.email || '');
   params.append('day',   day);
   answers.forEach((v, i) => params.append('q'+(i+1), v||''));
-  // no-cors чтобы не блокировал браузер/Telegram
-  fetch(WEBHOOK_URL + '?' + params.toString(), { method:'GET', mode:'no-cors' }).catch(()=>{});
+  const url = WEBHOOK_URL + '?' + params.toString();
+  // Image beacon — гарантированно доходит даже при закрытии страницы в Telegram
+  const img = new Image();
+  img.src = url;
+  // Дублируем через fetch на случай если beacon заблокирован
+  fetch(url, { method:'GET', mode:'no-cors' }).catch(()=>{});
 }
 
 /* ============================================================
@@ -1065,10 +1069,16 @@ function handleResultCta(){
 function checkAndRenderWaitScreen(){
   const lastCompletedDay = Math.max(0, ...Object.keys(state.completedAt).map(Number));
   if(lastCompletedDay === 0){
-    // уже есть tg или email, но диагностика 1 ещё не завершена — продолжаем с текущего вопроса
-    if(state.tg || state.email){
-      renderQuestion();
-      goToScreen('screen-diagnostic');
+    // диагностика 1 ещё не завершена
+    if(state.email){
+      // есть email — продолжаем только если есть ответы, иначе начинаем заново
+      const hasAnswers = state.answers[1] && state.answers[1].length > 0;
+      if(hasAnswers){
+        renderQuestion();
+        goToScreen('screen-diagnostic');
+      } else {
+        startDiagnostic(1);
+      }
     } else {
       goToScreen('screen-intro');
     }
