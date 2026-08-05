@@ -818,7 +818,13 @@ function submitEmail(){
   errEl.style.display = 'none';
   state.email = val;
   saveState();
-  startDiagnostic(1);
+  // Если уже есть завершённые дни — продолжаем с нужного места, не сбрасываем на день 1
+  const lastCompleted = Math.max(0, ...Object.keys(state.completedAt).map(Number));
+  if(lastCompleted > 0){
+    checkAndRenderWaitScreen();
+  } else {
+    startDiagnostic(1);
+  }
 }
 
 /* ============================================================
