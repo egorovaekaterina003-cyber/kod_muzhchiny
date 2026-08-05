@@ -756,12 +756,22 @@ let state = loadState();
 const urlParams = new URLSearchParams(window.location.search);
 const tgFromUrl   = urlParams.get('tg');
 const cuidFromUrl = urlParams.get('cuid');
+const dayFromUrl  = parseInt(urlParams.get('day') || '0', 10);
 if(tgFromUrl && !state.tg){
   state.tg = tgFromUrl;
   saveState();
 }
 if(cuidFromUrl && !state.cuid){
   state.cuid = cuidFromUrl;
+  saveState();
+}
+// Если бот передал day в ссылке — восстанавливаем прогресс сразу без запроса к скрипту
+if(dayFromUrl > 0){
+  for(let d = 1; d <= dayFromUrl; d++){
+    if(!state.completedAt[d]){
+      state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
+    }
+  }
   saveState();
 }
 
