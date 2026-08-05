@@ -1500,60 +1500,36 @@ window.addEventListener('DOMContentLoaded', () => {
   const hasStarted = Object.keys(state.completedAt).length > 0 ||
                       (state.answers[1] && state.answers[1].length > 0);
 
-  // Если есть tg_id — ВСЕГДА сначала проверяем таблицу (Telegram WebView не хранит localStorage)
+  // Если есть данные в localStorage — сразу показываем нужный экран
+  if(hasStarted){
+    checkAndRenderWaitScreen();
+    return;
+  }
+
+  // Нет данных в localStorage, но есть tg_id — восстанавливаем из таблицы
   if(state.tg && WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')){
     goToScreen('screen-loading');
-
-    let restored = false;
-    const restoreTimer = setTimeout(() => {
-      if(!restored){
-        restored = true;
-        // Таймаут — используем то что есть в localStorage
-        if(hasStarted){ checkAndRenderWaitScreen(); }
-        else { goToScreen('screen-intro'); }
-      }
-    }, 3000);
-
-    // Используем script тег вместо fetch — он работает в Telegram WebView без CORS проблем
-    window._restoreCallback = function(data) {
-      if(restored) return;
-      restored = true;
-      clearTimeout(restoreTimer);
-      if(data && data.day && data.day > 0){
-        state.email = data.email || state.email;
-        state.cuid  = data.cuid  || state.cuid;
-        for(let d = 1; d <= data.day; d++){
-          if(!state.completedAt[d]){
+    fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg))
+      .then(r => r.json())
+      .then(data => {
+        if(data && data.day && data.day > 0){
+          state.email = data.email || state.email;
+          state.cuid  = data.cuid  || state.cuid;
+          for(let d = 1; d <= data.day; d++){
             state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
           }
+          saveState();
+          updateTopbarStamp();
+          checkAndRenderWaitScreen();
+        } else {
+          goToScreen('screen-intro');
         }
-        saveState();
-        updateTopbarStamp();
-        checkAndRenderWaitScreen();
-      } else {
-        if(hasStarted){ checkAndRenderWaitScreen(); }
-        else { goToScreen('screen-intro'); }
-      }
-    };
-    const scriptEl = document.createElement('script');
-    scriptEl.src = WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg) + '&callback=_restoreCallback';
-    scriptEl.onerror = function() {
-      if(!restored){
-        restored = true;
-        clearTimeout(restoreTimer);
-        if(hasStarted){ checkAndRenderWaitScreen(); }
-        else { goToScreen('screen-intro'); }
-      }
-    };
-    document.head.appendChild(scriptEl);
+      })
+      .catch(() => { goToScreen('screen-intro'); });
     return;
   }
 
-  if(!hasStarted){
-    goToScreen('screen-intro');
-    return;
-  }
-  checkAndRenderWaitScreen();
+  goToScreen('screen-intro');
 });
 </script>
 
