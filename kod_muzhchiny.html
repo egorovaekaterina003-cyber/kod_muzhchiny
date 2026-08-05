@@ -1482,10 +1482,11 @@ function buildRecommendationText(weakest){
 function sendGift() {
   const btn = document.getElementById('gift-btn');
   const status = document.getElementById('gift-status');
-  if (!btn) return;
+  if (!btn || btn.disabled) return;
 
   trackEvent('btn_gift');
   btn.disabled = true;
+  btn.onclick = null;
   btn.textContent = 'Отправляем...';
 
   if (WEBHOOK_URL && !WEBHOOK_URL.includes('PASTE_')) {
