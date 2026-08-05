@@ -1514,40 +1514,38 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }, 3000);
 
-    fetch(WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg))
-      .then(r => r.json())
-      .then(data => {
-        if(restored) return;
+    // Используем script тег вместо fetch — он работает в Telegram WebView без CORS проблем
+    window._restoreCallback = function(data) {
+      if(restored) return;
+      restored = true;
+      clearTimeout(restoreTimer);
+      if(data && data.day && data.day > 0){
+        state.email = data.email || state.email;
+        state.cuid  = data.cuid  || state.cuid;
+        for(let d = 1; d <= data.day; d++){
+          if(!state.completedAt[d]){
+            state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
+          }
+        }
+        saveState();
+        updateTopbarStamp();
+        checkAndRenderWaitScreen();
+      } else {
+        if(hasStarted){ checkAndRenderWaitScreen(); }
+        else { goToScreen('screen-intro'); }
+      }
+    };
+    const scriptEl = document.createElement('script');
+    scriptEl.src = WEBHOOK_URL + '?action=restore&tg=' + encodeURIComponent(state.tg) + '&callback=_restoreCallback';
+    scriptEl.onerror = function() {
+      if(!restored){
         restored = true;
         clearTimeout(restoreTimer);
-        console.log('restoreState response:', JSON.stringify(data));
-        if(data && data.day && data.day > 0){
-          state.email = data.email || state.email;
-          state.cuid  = data.cuid  || state.cuid;
-          for(let d = 1; d <= data.day; d++){
-            if(!state.completedAt[d]){
-              state.completedAt[d] = Date.now() - 48 * 3600 * 1000;
-            }
-          }
-          saveState();
-          updateTopbarStamp();
-          console.log('completedAt after restore:', JSON.stringify(state.completedAt));
-          checkAndRenderWaitScreen();
-        } else {
-          console.log('restoreState: no data, day=0');
-          if(hasStarted){ checkAndRenderWaitScreen(); }
-          else { goToScreen('screen-intro'); }
-        }
-      })
-      .catch((err) => {
-        if(!restored){
-          restored = true;
-          clearTimeout(restoreTimer);
-          console.log('restoreState error:', err);
-          if(hasStarted){ checkAndRenderWaitScreen(); }
-          else { goToScreen('screen-intro'); }
-        }
-      });
+        if(hasStarted){ checkAndRenderWaitScreen(); }
+        else { goToScreen('screen-intro'); }
+      }
+    };
+    document.head.appendChild(scriptEl);
     return;
   }
 
